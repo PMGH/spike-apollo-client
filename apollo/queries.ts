@@ -18,4 +18,4 @@ export const GET_COUNTRY_BY_ID_QUERY = gql`
       emoji
     }
   }
-`
+`;

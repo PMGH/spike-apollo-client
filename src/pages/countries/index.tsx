@@ -5,6 +5,7 @@ import client from "../../../apollo/apollo-client";
 import { useQuery } from "@apollo/client";
 import { GET_COUNTRIES_QUERY, GET_COUNTRY_BY_ID_QUERY } from "apollo/queries";
 import ClientOnly from "components/client-only";
+import { Country } from "types/shared.types";
 
 const StaticCountriesList = ({ countries }: StaticCountriesListProps) => {
   if (countries) {
@@ -18,8 +19,7 @@ const StaticCountriesList = ({ countries }: StaticCountriesListProps) => {
 }
 
 const DynamicFeaturedCountry = ({ code }: FeaturedCountryProps) => {
-  const { loading, data: dynamicData, error } = useQuery(GET_COUNTRY_BY_ID_QUERY, { variables: { code } })
-
+  const { loading, data: dynamicData, error } = useQuery<{ country: Country }>(GET_COUNTRY_BY_ID_QUERY, { variables: { code } });
 
   console.log({ loading, dynamicData, error  })
 
