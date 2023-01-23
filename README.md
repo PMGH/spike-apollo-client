@@ -32,8 +32,17 @@ https://www.apollographql.com/blog/apollo-client/next-js/next-js-getting-started
 - Use instance of `ApolloClient` to make requests (can do this in `getStaticProps` too)
 
 #### Hooks
-Fetch using the `useQuery` hook. Apollo tracks loading and error states for us.
+https://www.apollographql.com/docs/react/api/react/hooks
+- ApolloProvider
+- ApolloConsumer
+- useQuery
+- useLazyQuery
+- useMutation
+- useSubscription
+- useApolloClient
+- useReactiveVar
 
+Fetch using the `useQuery` hook. Apollo tracks loading and error states for us.
 ```typescript
 import { gql, useQuery } from '@apollo/client';
 
@@ -64,7 +73,6 @@ function Dogs({ onDogSelected }) {
   );
 }
 ```
-
 
 #### Caching
 When Apollo Client fetches query results from our server, it automatically caches those results locally.
@@ -116,15 +124,42 @@ function DogPhoto({ breed }) {
 ```
 > use `notifyOnNetworkStatusChange: true` to have the component re-render while data is being refetched. This is useful to make sure the `loading` value updates accordingly.
 
-#### Error handling
-If you set `errorPolicy` to `all`, `useQuery` does not discard query response data, allowing you to render partial results.
-
-#### Manual Query Execution
-Use `useLazyQuery` if you want to execute a query based on a user action only.
-
 #### Cache-first policy
 By default, the `useQuery` hook checks the Apollo Client cache to see if all the data you requested is already available locally. If all data is available locally, `useQuery` returns that data and doesn't query your GraphQL server. This cache-first policy is Apollo Client's default fetch policy.
 > You can also apply a `nextFetchPolicy` if you want it to be different from the first fetch policy e.g. cache-only.
+
+#### Error handling
+- syntax errors
+- validation errors
+- resolver errors
+> Partial data can still be returned for resolver errors.
+> By default, Apollo Client throws away partial data and populates the `error.graphQLErrors` array of your `useQuery` call (or whichever hook you're using). You can instead use these partial results by defining an error policy for your operation.
+
+You can provide an `errorPolicy` to the `useQuery` hook. (e.g. 'none', 'ignore', 'all'). Note: if you set `errorPolicy` to `all`, `useQuery` does not discard query response data, allowing you to render partial results.
+
+#### Manual Query Execution
+https://www.apollographql.com/docs/react/data/queries#manual-execution-with-uselazyquery
+Use `useLazyQuery` if you want to execute a query based on a user action only.
+```typescript
+import React from 'react';
+import { useLazyQuery } from '@apollo/client';
+
+function DelayedQuery() {
+  const [getDog, { loading, error, data }] = useLazyQuery(GET_DOG_PHOTO);
+
+  if (loading) return <p>Loading ...</p>;
+  if (error) return `Error! ${error}`;
+
+  return (
+    <div>
+      {data?.dog && <img src={data.dog.displayImage} />}
+      <button onClick={() => getDog({ variables: { breed: 'bulldog' } })}>
+        Click me!
+      </button>
+    </div>
+  );
+}
+```
 
 #### Devtools
 An Apollo Client Devtools exists as a [Chrome extension](https://chrome.google.com/webstore/detail/apollo-client-devtools/jdkknkkbebbapilgoeccciglkfbmbnfm) (rated 3/5 stars)
@@ -148,15 +183,6 @@ query GetPerson {
   }
 }
 ```
-
-#### Error handling
-- syntax errors
-- validation errors
-- resolver errors
-> Partial data can still be returned for resolver errors.
-> By default, Apollo Client throws away partial data and populates the `error.graphQLErrors` array of your `useQuery` call (or whichever hook you're using). You can instead use these partial results by defining an error policy for your operation.
-
-You can provide an `errorPolicy` to the `useQuery` hook. (e.g. 'none', 'ignore', 'all').
 
 #### Pagination
 https://www.apollographql.com/docs/react/pagination/overview
@@ -209,14 +235,3 @@ const client = new ApolloClient({
   credentials: 'include'
 });
 ```
-
-#### React Hooks
-https://www.apollographql.com/docs/react/api/react/hooks
-- ApolloProvider
-- ApolloConsumer
-- useQuery
-- useLazyQuery
-- useMutation
-- useSubscription
-- useApolloClient
-- useReactiveVar
